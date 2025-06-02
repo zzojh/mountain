@@ -1,6 +1,5 @@
 import streamlit as st
 
-import streamlit as st
 import time
 
 st.title("🌟 MBTI 진로 추천기 🌟")
