@@ -1,7 +1,5 @@
 import streamlit as st
 
-import streamlit as st
-
 st.set_page_config(page_title="🌟 MBTI 진로 추천기 🌟", layout="centered")
 
 # --- CSS & JS 커튼 애니메이션 ---
