@@ -11,7 +11,7 @@ def white_text(text, size="16px", bold=False):
     weight = "bold" if bold else "normal"
     st.markdown(f"<p style='color:#ffffff; font-size:{size}; font-weight:{weight}; margin-bottom:5px;'>{text}</p>", unsafe_allow_html=True)
 
-# 기본 도시 데이터
+# 기본 도시 데이터 (나라, 도시, 위도, 경도, 침수 임계값(cm))
 data = [
     {"city": "뉴욕", "country":"미국", "lat": 40.7128, "lon": -74.0060, "flood_threshold": 100},
     {"city": "런던", "country":"영국", "lat": 51.5074, "lon": -0.1278, "flood_threshold": 80},
@@ -21,6 +21,12 @@ data = [
     {"city": "방콕", "country":"태국", "lat": 13.7563, "lon": 100.5018, "flood_threshold": 85},
     {"city": "서울", "country":"한국", "lat": 37.5665, "lon": 126.9780, "flood_threshold": 100},
     {"city": "부산", "country":"한국", "lat": 35.1796, "lon": 129.0756, "flood_threshold": 95},
+    # 추가 도시들
+    {"city": "상하이", "country":"중국", "lat": 31.2304, "lon": 121.4737, "flood_threshold": 110},
+    {"city": "뭄바이", "country":"인도", "lat": 19.0760, "lon": 72.8777, "flood_threshold": 85},
+    {"city": "카이로", "country":"이집트", "lat": 30.0444, "lon": 31.2357, "flood_threshold": 80},
+    {"city": "리우데자네이루", "country":"브라질", "lat": -22.9068, "lon": -43.1729, "flood_threshold": 95},
+    {"city": "케이프타운", "country":"남아프리카", "lat": -33.9249, "lon": 18.4241, "flood_threshold": 90},
 ]
 df = pd.DataFrame(data)
 
@@ -48,9 +54,9 @@ if st.session_state.page == "simulator":
     year = st.slider("📅 예상 연도", 2025, 2100, 2050, 5)
 
     rise_cm = temp * 25
-    st.write(f"📈 예상 해수면 상승: **{rise_cm:.1f}cm** ({year}년 기준)")
+    st.markdown(f"### 📈 예상 해수면 상승: **{rise_cm:.1f} cm** ({year}년 기준)")
 
-    # 위험도 계산
+    # 위험도 계산 함수
     def get_risk(rise, threshold):
         if rise >= threshold:
             return "높음"
@@ -65,11 +71,11 @@ if st.session_state.page == "simulator":
     center = [20, 0]
     m = folium.Map(location=center, zoom_start=2)
 
-    # 색상 맵 (파스텔톤)
+    # 위험도별 원색 색상
     color_map = {
-        "높음": "#F7A6B1",  # 연한 핑크
-        "중간": "#B3D4F7",  # 연한 하늘색
-        "낮음": "#CAB8F7"   # 연한 보라색
+        "높음": "#FF0000",  # 빨강
+        "중간": "#FFA500",  # 주황
+        "낮음": "#0000FF"   # 파랑
     }
 
     # 기본 도시들 표시
@@ -79,8 +85,8 @@ if st.session_state.page == "simulator":
             radius=8,
             color=color_map[row["위험도"]],
             fill=True,
-            fill_opacity=0.6,
-            popup=f"{row['city']} ({row['country']})<br>위험도: {row['위험도']}<br>임계값: {row['flood_threshold']}cm"
+            fill_opacity=0.7,
+            popup=f"{row['city']} ({row['country']})<br>위험도: {row['위험도']}<br>임계값: {row['flood_threshold']} cm"
         ).add_to(m)
 
     # 사용자 도시 추가 UI
@@ -108,11 +114,11 @@ if st.session_state.page == "simulator":
             st.session_state.user_cities.append(new_city)
             st.success(f"'{user_city}' 위치가 지도에 추가되었습니다!")
 
-    # 사용자 도시 표시 (다른 아이콘, 색상)
+    # 사용자 도시 표시 (별 아이콘, 진한 파랑)
     for city in st.session_state.user_cities:
         folium.Marker(
             location=[city["lat"], city["lon"]],
-            popup=f"{city['city']} (사용자 추가)<br>위험도: {city['위험도']}<br>임계값: {city['flood_threshold']}cm",
+            popup=f"{city['city']} (사용자 추가)<br>위험도: {city['위험도']}<br>임계값: {city['flood_threshold']} cm",
             icon=folium.Icon(color="darkblue", icon="star", prefix='fa')
         ).add_to(m)
 
@@ -170,4 +176,5 @@ elif st.session_state.page == "damage":
     white_text("• 해안 방어 구조물 구축: 제방, 방조제, 해안 방파제 등 인프라 강화")
     white_text("• 지역 이주 및 재정착: 위험 지역 주민의 안전한 이주 및 지원 정책 마련")
     white_text("• 지속 가능한 도시 개발: 스펀지 도시 개념 도입으로 자연 수자원 관리 및 홍수 완화")
+
 
