@@ -3,9 +3,17 @@ import pandas as pd
 import folium
 from streamlit_folium import st_folium
 
-# 페이지 선택
-page = st.sidebar.selectbox("📌 페이지 선택", ["🌍 해수면 상승 시뮬레이터", "⚠️ 피해 설명"])
+# 페이지 선택 버튼
+col1, col2 = st.columns(2)
+with col1:
+    sim_btn = st.button("🌍 해수면 상승 시뮬레이터")
+with col2:
+    desc_btn = st.button("⚠️ 피해 설명")
 
+# 기본 값
+page = "🌍 해수면 상승 시뮬레이터" if sim_btn or (not sim_btn and not desc_btn) else "⚠️ 피해 설명"
+
+# 시뮬레이터 페이지
 if page == "🌍 해수면 상승 시뮬레이터":
     st.title("🌊 해수면 상승 시뮬레이터")
     st.markdown("기후 변화로 인한 해수면 상승이 세계 도시에 미치는 영향을 시각화합니다.")
@@ -104,47 +112,17 @@ if page == "🌍 해수면 상승 시뮬레이터":
 
 # 피해 설명 페이지
 elif page == "⚠️ 피해 설명":
-    st.markdown("<h1 style='color:#d62728;'>⚠️ 해수면 상승 피해 설명</h1>", unsafe_allow_html=True)
-    st.markdown("""
-    <style>
-    .impact-box {
-        border-radius: 6px;
-        padding: 10px 15px;
-        margin-bottom: 15px;
-        font-size: 16px;
-        line-height: 1.6;
-    }
-    .low { background-color: #dff0d8; border-left: 6px solid #3c763d; }
-    .moderate { background-color: #fcf8e3; border-left: 6px solid #8a6d3b; }
-    .high { background-color: #f2dede; border-left: 6px solid #a94442; }
-    </style>
+    st.markdown("## ⚠️ 해수면 상승 피해 설명")
 
-    <div class="impact-box low">
-    <b>📏 0~25cm 상승</b><br>
-    - 저지대 소규모 침수 발생 가능<br>
-    - 해안 생태계 변화 시작<br>
-    - 일부 농작물 염해 피해 🌱
-    </div>
+    st.markdown("### 📏 **0~25cm 상승**")
+    st.markdown("<div style='color:green; font-size:17px;'>- 저지대 소규모 침수 발생 가능<br>- 해안 생태계 변화 시작<br>- 일부 농작물 염해 피해 🌱</div>", unsafe_allow_html=True)
 
-    <div class="impact-box moderate">
-    <b>📏 25~50cm 상승</b><br>
-    - 섬 국가 침수 가시화 (예: 투발루)<br>
-    - 저지대 인구 이주 발생<br>
-    - 주요 도시 하수도 역류 위험 💦
-    </div>
+    st.markdown("### 📏 **25~50cm 상승**")
+    st.markdown("<div style='color:orange; font-size:17px;'>- 섬 국가 침수 가시화 (예: 투발루)<br>- 저지대 인구 이주 발생<br>- 주요 도시 하수도 역류 위험 💦</div>", unsafe_allow_html=True)
 
-    <div class="impact-box moderate">
-    <b>📏 50~100cm 상승</b><br>
-    - 도시 인프라 침수 (항만, 철도 등)<br>
-    - 기후 난민 급증<br>
-    - 식수 오염과 염수 침투 문제 💧
-    </div>
+    st.markdown("### 📏 **50~100cm 상승**")
+    st.markdown("<div style='color:#d97706; font-size:17px;'>- 도시 인프라 침수 (항만, 철도 등)<br>- 기후 난민 급증<br>- 식수 오염과 염수 침투 문제 💧</div>", unsafe_allow_html=True)
 
-    <div class="impact-box high">
-    <b>📏 100cm 이상 상승</b><br>
-    - 해안선 대규모 침수<br>
-    - 대규모 기후 이주자 발생<br>
-    - 생태계 및 경제 시스템 붕괴 위험 🌍
-    </div>
-    """, unsafe_allow_html=True)
+    st.markdown("### 📏 **100cm 이상 상승**")
+    st.markdown("<div style='color:red; font-size:17px;'>- 해안선 대규모 침수<br>- 대규모 기후 이주자 발생<br>- 생태계 및 경제 시스템 붕괴 위험 🌍</div>", unsafe_allow_html=True)
 
