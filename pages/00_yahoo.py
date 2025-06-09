@@ -28,7 +28,6 @@ start_date = end_date - timedelta(days=365)
 
 # 데이터 다운로드
 st.info("야후 파이낸스에서 데이터를 불러오는 중입니다. 잠시만 기다려주세요...")
-
 data = {}
 for name, ticker in top10_tickers.items():
     stock = yf.download(ticker, start=start_date, end=end_date)
