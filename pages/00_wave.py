@@ -3,8 +3,6 @@ import pandas as pd
 import folium
 from streamlit_folium import st_folium
 
-page = st.sidebar.radio("페이지 선택", ("시뮬레이터", "피해 설명"))
-
 def simulator_page():
     st.title("🌊 해수면 상승 & 침수 위험 시뮬레이터 🐳")
 
