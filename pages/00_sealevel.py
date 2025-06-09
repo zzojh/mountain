@@ -11,7 +11,7 @@ def white_text(text, size="16px", bold=False):
     weight = "bold" if bold else "normal"
     st.markdown(f"<p style='color:#ffffff; font-size:{size}; font-weight:{weight}; margin-bottom:5px;'>{text}</p>", unsafe_allow_html=True)
 
-# 도시 데이터 (예시)
+# 기본 도시 데이터
 data = [
     {"city": "뉴욕", "country":"미국", "lat": 40.7128, "lon": -74.0060, "flood_threshold": 100},
     {"city": "런던", "country":"영국", "lat": 51.5074, "lon": -0.1278, "flood_threshold": 80},
@@ -22,12 +22,13 @@ data = [
     {"city": "서울", "country":"한국", "lat": 37.5665, "lon": 126.9780, "flood_threshold": 100},
     {"city": "부산", "country":"한국", "lat": 35.1796, "lon": 129.0756, "flood_threshold": 95},
 ]
-
 df = pd.DataFrame(data)
 
 # 세션 상태 초기화
 if 'page' not in st.session_state:
     st.session_state.page = "home"
+if 'user_cities' not in st.session_state:
+    st.session_state.user_cities = []
 
 # 페이지 선택 버튼 UI
 col1, col2 = st.columns(2)
@@ -60,18 +61,18 @@ if st.session_state.page == "simulator":
 
     df["위험도"] = df["flood_threshold"].apply(lambda x: get_risk(rise_cm, x))
 
-    # 지도 중심 세계 중앙
+    # 지도 생성
     center = [20, 0]
     m = folium.Map(location=center, zoom_start=2)
 
-    # 색깔 맵 (파스텔톤)
+    # 색상 맵 (파스텔톤)
     color_map = {
         "높음": "#F7A6B1",  # 연한 핑크
         "중간": "#B3D4F7",  # 연한 하늘색
         "낮음": "#CAB8F7"   # 연한 보라색
     }
 
-    # 피해 예상 도시 모두 표시 (위험도별 색상)
+    # 기본 도시들 표시
     for _, row in df.iterrows():
         folium.CircleMarker(
             location=[row["lat"], row["lon"]],
@@ -82,27 +83,46 @@ if st.session_state.page == "simulator":
             popup=f"{row['city']} ({row['country']})<br>위험도: {row['위험도']}<br>임계값: {row['flood_threshold']}cm"
         ).add_to(m)
 
-    # 사용자 도시 추가 (위도, 경도, 설명)
+    # 사용자 도시 추가 UI
     st.markdown("---")
     styled_title("➕ 사용자 지정 도시 추가")
 
     user_lat = st.number_input("위도 (Latitude)", min_value=-90.0, max_value=90.0, value=37.5665, format="%.6f")
     user_lon = st.number_input("경도 (Longitude)", min_value=-180.0, max_value=180.0, value=126.9780, format="%.6f")
-    user_desc = st.text_input("도시 이름 또는 위치 설명")
+    user_city = st.text_input("도시 이름 또는 위치 설명")
+    user_threshold = st.number_input("침수 임계값 (cm)", min_value=1, value=100)
 
     if st.button("➕ 지도에 추가"):
-        folium.Marker(
-            location=[user_lat, user_lon],
-            popup=user_desc if user_desc else "사용자 지정 위치",
-            icon=folium.Icon(color="blue", icon="map-marker", prefix='fa')
-        ).add_to(m)
-        st.success("지도에 위치가 추가되었습니다!")
+        if user_city.strip() == "":
+            st.error("도시 이름을 입력해주세요.")
+        else:
+            user_risk = get_risk(rise_cm, user_threshold)
+            new_city = {
+                "city": user_city,
+                "country": "사용자 추가",
+                "lat": user_lat,
+                "lon": user_lon,
+                "flood_threshold": user_threshold,
+                "위험도": user_risk
+            }
+            st.session_state.user_cities.append(new_city)
+            st.success(f"'{user_city}' 위치가 지도에 추가되었습니다!")
 
+    # 사용자 도시 표시 (다른 아이콘, 색상)
+    for city in st.session_state.user_cities:
+        folium.Marker(
+            location=[city["lat"], city["lon"]],
+            popup=f"{city['city']} (사용자 추가)<br>위험도: {city['위험도']}<br>임계값: {city['flood_threshold']}cm",
+            icon=folium.Icon(color="darkblue", icon="star", prefix='fa')
+        ).add_to(m)
+
+    # 지도 출력
     st_folium(m, width=800, height=500)
 
     # 위험도 데이터 테이블 토글(expander)
     with st.expander("📊 침수 위험 도시 표 보기"):
-        st.dataframe(df[["city", "country", "위험도", "flood_threshold"]].rename(columns={
+        combined_df = pd.concat([df, pd.DataFrame(st.session_state.user_cities)], ignore_index=True)
+        st.dataframe(combined_df[["city", "country", "위험도", "flood_threshold"]].rename(columns={
             "city": "도시",
             "country": "국가",
             "flood_threshold": "임계값 (cm)"
