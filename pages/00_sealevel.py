@@ -11,7 +11,7 @@ def white_text(text, size="16px", bold=False):
     weight = "bold" if bold else "normal"
     st.markdown(f"<p style='color:#ffffff; font-size:{size}; font-weight:{weight}; margin-bottom:5px;'>{text}</p>", unsafe_allow_html=True)
 
-# 도시 데이터
+# 도시 데이터 (예시)
 data = [
     {"city": "뉴욕", "country":"미국", "lat": 40.7128, "lon": -74.0060, "flood_threshold": 100},
     {"city": "런던", "country":"영국", "lat": 51.5074, "lon": -0.1278, "flood_threshold": 80},
@@ -24,13 +24,6 @@ data = [
 ]
 
 df = pd.DataFrame(data)
-
-# 고정 피해 도시 (예시)
-fixed_damage_cities = [
-    {"name": "서울", "lat": 37.5665, "lon": 126.9780, "desc": "한국 서울시 해수면 상승 위험 지역"},
-    {"name": "마이애미", "lat": 25.7617, "lon": -80.1918, "desc": "미국 마이애미, 해수면 상승과 폭풍해일 취약"},
-    {"name": "방콕", "lat": 13.7563, "lon": 100.5018, "desc": "태국 방콕, 침수 위험 증가 중"}
-]
 
 # 세션 상태 초기화
 if 'page' not in st.session_state:
@@ -49,24 +42,14 @@ if st.session_state.page == "simulator":
     st.title("🌊 해수면 상승 시뮬레이터")
     st.write("기후 변화로 인한 해수면 상승이 세계 도시에 미치는 영향을 시각화합니다.")
 
-    # 국가 선택 (정보용, 지도 표시와 무관)
-    countries = sorted(df['country'].unique())
-    selected_country = st.selectbox("국가 선택", countries)
-
-    # 해당 국가 도시 필터링
-    df_country = df[df["country"] == selected_country]
-    city_list = df_country["city"].tolist()
-    selected_city = None
-    if city_list:
-        selected_city = st.selectbox("도시 선택", city_list)
-    else:
-        st.write("해당 국가에 등록된 도시가 없습니다.")
-
+    # 온도 상승 및 연도 선택
     temp = st.slider("🌡️ 지구 평균 온도 상승 (°C)", 0.0, 5.0, 1.0, 0.1)
     year = st.slider("📅 예상 연도", 2025, 2100, 2050, 5)
+
     rise_cm = temp * 25
     st.write(f"📈 예상 해수면 상승: **{rise_cm:.1f}cm** ({year}년 기준)")
 
+    # 위험도 계산
     def get_risk(rise, threshold):
         if rise >= threshold:
             return "높음"
@@ -77,13 +60,9 @@ if st.session_state.page == "simulator":
 
     df["위험도"] = df["flood_threshold"].apply(lambda x: get_risk(rise_cm, x))
 
-    # 지도 중심: 선택한 도시가 있으면 그곳, 없으면 세계 중간
-    if selected_city:
-        center = df[df["city"] == selected_city][["lat", "lon"]].iloc[0].values.tolist()
-    else:
-        center = [20, 0]
-
-    m = folium.Map(location=center, zoom_start=3)
+    # 지도 중심 세계 중앙
+    center = [20, 0]
+    m = folium.Map(location=center, zoom_start=2)
 
     # 색깔 맵 (파스텔톤)
     color_map = {
@@ -92,7 +71,7 @@ if st.session_state.page == "simulator":
         "낮음": "#CAB8F7"   # 연한 보라색
     }
 
-    # 전체 피해 예상 도시 마커 표시 (지도는 항상 모든 도시 표시)
+    # 피해 예상 도시 모두 표시 (위험도별 색상)
     for _, row in df.iterrows():
         folium.CircleMarker(
             location=[row["lat"], row["lon"]],
@@ -100,10 +79,10 @@ if st.session_state.page == "simulator":
             color=color_map[row["위험도"]],
             fill=True,
             fill_opacity=0.6,
-            popup=f"{row['city']}<br>위험도: {row['위험도']}<br>임계값: {row['flood_threshold']}cm"
+            popup=f"{row['city']} ({row['country']})<br>위험도: {row['위험도']}<br>임계값: {row['flood_threshold']}cm"
         ).add_to(m)
 
-    # 사용자 도시 추가 (위도, 경도, 설명 입력)
+    # 사용자 도시 추가 (위도, 경도, 설명)
     st.markdown("---")
     styled_title("➕ 사용자 지정 도시 추가")
 
@@ -121,7 +100,7 @@ if st.session_state.page == "simulator":
 
     st_folium(m, width=800, height=500)
 
-    # 위험도 데이터 테이블
+    # 위험도 데이터 테이블 토글(expander)
     with st.expander("📊 침수 위험 도시 표 보기"):
         st.dataframe(df[["city", "country", "위험도", "flood_threshold"]].rename(columns={
             "city": "도시",
@@ -172,17 +151,3 @@ elif st.session_state.page == "damage":
     white_text("• 지역 이주 및 재정착: 위험 지역 주민의 안전한 이주 및 지원 정책 마련")
     white_text("• 지속 가능한 도시 개발: 스펀지 도시 개념 도입으로 자연 수자원 관리 및 홍수 완화")
 
-    # 피해 도시 고정 지도 (고정 도시만 표시)
-    styled_title("📍 주요 피해 도시 위치")
-
-    map_center = [20, 0]
-    m = folium.Map(location=map_center, zoom_start=2)
-
-    for city in fixed_damage_cities:
-        folium.Marker(
-            location=[city["lat"], city["lon"]],
-            popup=f"{city['name']} - {city['desc']}",
-            icon=folium.Icon(color="red", icon="exclamation-triangle", prefix='fa')
-        ).add_to(m)
-
-    st_folium(m, width=800, height=500)
