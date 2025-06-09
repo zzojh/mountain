@@ -1,3 +1,4 @@
+import streamlit as st
 st.title("교통량 예측 프로그램")
 
 # 1. 시, 구, 동, 번지 선택
