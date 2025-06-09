@@ -86,7 +86,7 @@ def simulator_page():
     st.write(f"🔴 높음: {risk_summary['높음 🔴']}개 도시, 🟠 중간: {risk_summary['중간 🟠']}개 도시, 🟢 낮음: {risk_summary['낮음 🟢']}개 도시")
 
 def impact_explanation_page():
-    st.title("⚠️ 해수면 상승에 따른 피해 정도 상세 설명")
+    st.title("⚠️ 해수면 상승에 따른 피해 정도 설명")
 
     st.markdown("""
     <style>
