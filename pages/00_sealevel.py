@@ -11,50 +11,28 @@ def white_text(text, size="16px", bold=False):
     weight = "bold" if bold else "normal"
     st.markdown(f"<p style='color:#ffffff; font-size:{size}; font-weight:{weight}; margin-bottom:5px;'>{text}</p>", unsafe_allow_html=True)
 
-# 도시 데이터에 국가 컬럼 추가
+# 도시 데이터
 data = [
     {"city": "뉴욕", "country":"미국", "lat": 40.7128, "lon": -74.0060, "flood_threshold": 100},
     {"city": "런던", "country":"영국", "lat": 51.5074, "lon": -0.1278, "flood_threshold": 80},
     {"city": "도쿄", "country":"일본", "lat": 35.6762, "lon": 139.6503, "flood_threshold": 120},
     {"city": "시드니", "country":"호주", "lat": -33.8688, "lon": 151.2093, "flood_threshold": 90},
-    {"city": "뭄바이", "country":"인도", "lat": 19.0760, "lon": 72.8777, "flood_threshold": 110},
-    {"city": "상하이", "country":"중국", "lat": 31.2304, "lon": 121.4737, "flood_threshold": 95},
-    {"city": "방콕", "country":"태국", "lat": 13.7563, "lon": 100.5018, "flood_threshold": 85},
-    {"city": "로스앤젤레스", "country":"미국", "lat": 34.0522, "lon": -118.2437, "flood_threshold": 105},
     {"city": "마이애미", "country":"미국", "lat": 25.7617, "lon": -80.1918, "flood_threshold": 90},
-    {"city": "리우데자네이루", "country":"브라질", "lat": -22.9068, "lon": -43.1729, "flood_threshold": 100},
-    {"city": "케이프타운", "country":"남아프리카공화국", "lat": -33.9249, "lon": 18.4241, "flood_threshold": 85},
-    {"city": "싱가포르", "country":"싱가포르", "lat": 1.3521, "lon": 103.8198, "flood_threshold": 90},
-    {"city": "바르셀로나", "country":"스페인", "lat": 41.3851, "lon": 2.1734, "flood_threshold": 95},
-    {"city": "두바이", "country":"아랍에미리트", "lat": 25.276987, "lon": 55.296249, "flood_threshold": 100},
-    {"city": "암스테르담", "country":"네덜란드", "lat": 52.3676, "lon": 4.9041, "flood_threshold": 80},
-    {"city": "베니스", "country":"이탈리아", "lat": 45.4408, "lon": 12.3155, "flood_threshold": 70},
-    {"city": "부에노스아이레스", "country":"아르헨티나", "lat": -34.6037, "lon": -58.3816, "flood_threshold": 100},
-    {"city": "이스탄불", "country":"터키", "lat": 41.0082, "lon": 28.9784, "flood_threshold": 95},
-    {"city": "밴쿠버", "country":"캐나다", "lat": 49.2827, "lon": -123.1207, "flood_threshold": 90},
-    {"city": "오사카", "country":"일본", "lat": 34.6937, "lon": 135.5023, "flood_threshold": 110},
-    {"city": "호치민", "country":"베트남", "lat": 10.7769, "lon": 106.7009, "flood_threshold": 85},
-    {"city": "카라치", "country":"파키스탄", "lat": 24.8607, "lon": 67.0011, "flood_threshold": 95},
-    {"city": "콜카타", "country":"인도", "lat": 22.5726, "lon": 88.3639, "flood_threshold": 90},
-    {"city": "하노이", "country":"베트남", "lat": 21.0285, "lon": 105.8542, "flood_threshold": 88},
-    {"city": "자카르타", "country":"인도네시아", "lat": -6.2088, "lon": 106.8456, "flood_threshold": 70},
+    {"city": "방콕", "country":"태국", "lat": 13.7563, "lon": 100.5018, "flood_threshold": 85},
     {"city": "서울", "country":"한국", "lat": 37.5665, "lon": 126.9780, "flood_threshold": 100},
     {"city": "부산", "country":"한국", "lat": 35.1796, "lon": 129.0756, "flood_threshold": 95},
-    {"city": "인천", "country":"한국", "lat": 37.4563, "lon": 126.7052, "flood_threshold": 92},
-    {"city": "포항", "country":"한국", "lat": 36.0190, "lon": 129.3435, "flood_threshold": 88},
-    {"city": "여수", "country":"한국", "lat": 34.7604, "lon": 127.6622, "flood_threshold": 85}
 ]
 
 df = pd.DataFrame(data)
 
-# 고정 피해 도시 일부 (서울, 마이애미, 방콕 예시)
+# 고정 피해 도시 (예시)
 fixed_damage_cities = [
     {"name": "서울", "lat": 37.5665, "lon": 126.9780, "desc": "한국 서울시 해수면 상승 위험 지역"},
     {"name": "마이애미", "lat": 25.7617, "lon": -80.1918, "desc": "미국 마이애미, 해수면 상승과 폭풍해일 취약"},
     {"name": "방콕", "lat": 13.7563, "lon": 100.5018, "desc": "태국 방콕, 침수 위험 증가 중"}
 ]
 
-# 페이지 선택용 세션 상태 초기화
+# 세션 상태 초기화
 if 'page' not in st.session_state:
     st.session_state.page = "home"
 
@@ -71,18 +49,18 @@ if st.session_state.page == "simulator":
     st.title("🌊 해수면 상승 시뮬레이터")
     st.write("기후 변화로 인한 해수면 상승이 세계 도시에 미치는 영향을 시각화합니다.")
 
-    # 국가 선택 추가
+    # 국가 선택 (정보용, 지도 표시와 무관)
     countries = sorted(df['country'].unique())
     selected_country = st.selectbox("국가 선택", countries)
-    df_country = df[df["country"] == selected_country]
 
-    # 도시 선택 (국가 필터 후)
+    # 해당 국가 도시 필터링
+    df_country = df[df["country"] == selected_country]
     city_list = df_country["city"].tolist()
+    selected_city = None
     if city_list:
         selected_city = st.selectbox("도시 선택", city_list)
     else:
         st.write("해당 국가에 등록된 도시가 없습니다.")
-        selected_city = None
 
     temp = st.slider("🌡️ 지구 평균 온도 상승 (°C)", 0.0, 5.0, 1.0, 0.1)
     year = st.slider("📅 예상 연도", 2025, 2100, 2050, 5)
@@ -97,36 +75,58 @@ if st.session_state.page == "simulator":
         else:
             return "낮음"
 
-    df_country["위험도"] = df_country["flood_threshold"].apply(lambda x: get_risk(rise_cm, x))
+    df["위험도"] = df["flood_threshold"].apply(lambda x: get_risk(rise_cm, x))
 
+    # 지도 중심: 선택한 도시가 있으면 그곳, 없으면 세계 중간
     if selected_city:
-        center = df_country[df_country["city"] == selected_city][["lat", "lon"]].iloc[0].values.tolist()
+        center = df[df["city"] == selected_city][["lat", "lon"]].iloc[0].values.tolist()
     else:
-        center = [20,0]  # 기본 위치
+        center = [20, 0]
 
-    m = folium.Map(location=center, zoom_start=4)
+    m = folium.Map(location=center, zoom_start=3)
 
+    # 색깔 맵 (파스텔톤)
     color_map = {
-        "높음": "#e63946",
-        "중간": "#f4a261",
-        "낮음": "#2a9d8f"
+        "높음": "#F7A6B1",  # 연한 핑크
+        "중간": "#B3D4F7",  # 연한 하늘색
+        "낮음": "#CAB8F7"   # 연한 보라색
     }
 
-    for _, row in df_country.iterrows():
+    # 전체 피해 예상 도시 마커 표시 (지도는 항상 모든 도시 표시)
+    for _, row in df.iterrows():
         folium.CircleMarker(
             location=[row["lat"], row["lon"]],
             radius=8,
             color=color_map[row["위험도"]],
             fill=True,
-            fill_opacity=0.7,
+            fill_opacity=0.6,
             popup=f"{row['city']}<br>위험도: {row['위험도']}<br>임계값: {row['flood_threshold']}cm"
         ).add_to(m)
 
+    # 사용자 도시 추가 (위도, 경도, 설명 입력)
+    st.markdown("---")
+    styled_title("➕ 사용자 지정 도시 추가")
+
+    user_lat = st.number_input("위도 (Latitude)", min_value=-90.0, max_value=90.0, value=37.5665, format="%.6f")
+    user_lon = st.number_input("경도 (Longitude)", min_value=-180.0, max_value=180.0, value=126.9780, format="%.6f")
+    user_desc = st.text_input("도시 이름 또는 위치 설명")
+
+    if st.button("➕ 지도에 추가"):
+        folium.Marker(
+            location=[user_lat, user_lon],
+            popup=user_desc if user_desc else "사용자 지정 위치",
+            icon=folium.Icon(color="blue", icon="map-marker", prefix='fa')
+        ).add_to(m)
+        st.success("지도에 위치가 추가되었습니다!")
+
     st_folium(m, width=800, height=500)
 
+    # 위험도 데이터 테이블
     with st.expander("📊 침수 위험 도시 표 보기"):
-        st.dataframe(df_country[["city", "위험도", "flood_threshold"]].rename(columns={
-            "city": "도시", "flood_threshold": "임계값 (cm)"
+        st.dataframe(df[["city", "country", "위험도", "flood_threshold"]].rename(columns={
+            "city": "도시",
+            "country": "국가",
+            "flood_threshold": "임계값 (cm)"
         }))
 
 elif st.session_state.page == "damage":
@@ -172,34 +172,17 @@ elif st.session_state.page == "damage":
     white_text("• 지역 이주 및 재정착: 위험 지역 주민의 안전한 이주 및 지원 정책 마련")
     white_text("• 지속 가능한 도시 개발: 스펀지 도시 개념 도입으로 자연 수자원 관리 및 홍수 완화")
 
-    # 피해 도시 고정 + 사용자 위치 추가 표시 지도
-    styled_title("📍 피해 도시 및 사용자 지정 위치 확인")
+    # 피해 도시 고정 지도 (고정 도시만 표시)
+    styled_title("📍 주요 피해 도시 위치")
 
-    # 지도 중심은 한국 서울로 기본 설정
-    map_center = [37.5665, 126.9780]
-    m = folium.Map(location=map_center, zoom_start=3)
+    map_center = [20, 0]
+    m = folium.Map(location=map_center, zoom_start=2)
 
-    # 고정 피해 도시 마커 추가
     for city in fixed_damage_cities:
         folium.Marker(
             location=[city["lat"], city["lon"]],
             popup=f"{city['name']} - {city['desc']}",
             icon=folium.Icon(color="red", icon="exclamation-triangle", prefix='fa')
         ).add_to(m)
-
-    st.write("아래에 위도와 경도를 입력하면 지도에 마커를 추가할 수 있습니다.")
-
-    # 사용자 입력 위도, 경도
-    user_lat = st.number_input("위도 (Latitude)", min_value=-90.0, max_value=90.0, value=37.5665, format="%.6f")
-    user_lon = st.number_input("경도 (Longitude)", min_value=-180.0, max_value=180.0, value=126.9780, format="%.6f")
-    user_desc = st.text_input("위치 설명 (예: '내 관심 지역')", "")
-
-    if st.button("➕ 위치 추가하기"):
-        folium.Marker(
-            location=[user_lat, user_lon],
-            popup=user_desc if user_desc else "사용자 지정 위치",
-            icon=folium.Icon(color="blue", icon="map-marker", prefix='fa')
-        ).add_to(m)
-        st.success("지도에 위치가 추가되었습니다!")
 
     st_folium(m, width=800, height=500)
