@@ -3,17 +3,29 @@ import pandas as pd
 import folium
 from streamlit_folium import st_folium
 
-# 페이지 선택 버튼
-col1, col2 = st.columns(2)
-with col1:
-    sim_btn = st.button("🌍 해수면 상승 시뮬레이터")
-with col2:
-    desc_btn = st.button("⚠️ 피해 설명")
+def render_impact_section(title, color_bg, color_border, content_lines):
+    st.markdown(
+        f"""
+        <div style="
+            background-color: {color_bg};
+            border-left: 6px solid {color_border};
+            border-radius: 8px;
+            padding: 15px 20px;
+            margin-bottom: 20px;
+            color: black;
+            font-size: 16px;
+            line-height: 1.5;
+            ">
+            <strong style="font-size:18px;">{title}</strong><br>
+            {"<br>".join(content_lines)}
+        </div>
+        """,
+        unsafe_allow_html=True
+    )
 
-# 기본 값
-page = "🌍 해수면 상승 시뮬레이터" if sim_btn or (not sim_btn and not desc_btn) else "⚠️ 피해 설명"
+# 페이지 버튼 선택
+page = st.sidebar.radio("📌 페이지 선택", ["🌍 해수면 상승 시뮬레이터", "⚠️ 피해 설명"])
 
-# 시뮬레이터 페이지
 if page == "🌍 해수면 상승 시뮬레이터":
     st.title("🌊 해수면 상승 시뮬레이터")
     st.markdown("기후 변화로 인한 해수면 상승이 세계 도시에 미치는 영향을 시각화합니다.")
@@ -110,121 +122,100 @@ if page == "🌍 해수면 상승 시뮬레이터":
             "city": "도시", "flood_threshold": "임계값 (cm)"
         }))
 
-# 피해 설명 페이지
 elif page == "⚠️ 피해 설명":
-    def render_impact_section(title, color_bg, color_border, content_lines):
+    st.title("⚠️ 해수면 상승 피해 설명")
+
+    render_impact_section(
+        "📏 0~25cm 상승 (위험도: 낮음)",
+        "#f9e6f9",  # 파스텔 핑크
+        "#d18dc6",
+        [
+            "- 저지대 소규모 침수 발생 가능",
+            "- 해안 생태계 변화 시작",
+            "- 일부 농작물 염해 피해 🌱"
+        ]
+    )
+
+    render_impact_section(
+        "📏 25~50cm 상승 (위험도: 중간)",
+        "#d0f0fd",  # 파스텔 하늘색
+        "#5a9bd4",
+        [
+            "- 섬 국가 침수 가시화 (예: 투발루)",
+            "- 저지대 인구 이주 발생",
+            "- 주요 도시 하수도 역류 위험 💦"
+        ]
+    )
+
+    render_impact_section(
+        "📏 50~100cm 상승 (위험도: 높음)",
+        "#e6d7f8",  # 파스텔 연보라색
+        "#a085d9",
+        [
+            "- 도시 인프라 침수 (항만, 철도 등)",
+            "- 기후 난민 급증",
+            "- 식수 오염과 염수 침투 문제 💧"
+        ]
+    )
+
+    render_impact_section(
+        "📏 100cm 이상 상승 (위험도: 매우 높음)",
+        "#ffd7e8",  # 연핑크색
+        "#e085a6",
+        [
+            "- 해안선 대규모 침수",
+            "- 대규모 기후 이주자 발생",
+            "- 생태계 및 경제 시스템 붕괴 위험 🌍"
+        ]
+    )
+
+    st.markdown("---")
+
+    st.header("🌍 실제 피해 사례")
+
     st.markdown(
-        f"""
-        <div style="
-            background-color: {color_bg};
-            border-left: 6px solid {color_border};
-            border-radius: 8px;
-            padding: 15px 20px;
-            margin-bottom: 20px;
-            color: black;
-            font-size: 16px;
-            line-height: 1.5;
-            ">
-            <strong style="font-size:18px;">{title}</strong><br>
-            {"<br>".join(content_lines)}
+        """
+        <div style="background:#e6f2ff; border-left: 6px solid #7fb3ff; border-radius:8px; padding:15px; margin-bottom:20px;">
+        <strong>1. 필리핀 루손섬 어촌 공동체</strong><br>
+        루손섬 어촌 지역은 태풍 하이옌 이후 해수면 상승과 어획량 감소로 큰 피해를 입었습니다. 맹그로브 복원과 지속 가능한 생계 다각화로 대응 중입니다.<br>
+        <a href="https://time.com/7289533/philippines-fishing-communities-rising-water/" target="_blank">관련 기사 보기</a>
         </div>
+        """, unsafe_allow_html=True
+    )
+
+    st.markdown(
+        """
+        <div style="background:#e6f2ff; border-left: 6px solid #7fb3ff; border-radius:8px; padding:15px; margin-bottom:20px;">
+        <strong>2. 멕시코 엘 보스케 마을</strong><br>
+        해수면 상승과 폭풍으로 인해 주민 다수가 이주했으며, 정부 지원 지연 속 자력 재건을 시도하고 있습니다.<br>
+        <a href="https://apnews.com/article/ec3aabaa42157f172e1b27f489104641" target="_blank">관련 기사 보기</a>
+        </div>
+        """, unsafe_allow_html=True
+    )
+
+    st.markdown(
+        """
+        <div style="background:#e6f2ff; border-left: 6px solid #7fb3ff; border-radius:8px; padding:15px; margin-bottom:20px;">
+        <strong>3. 투발루 해안 적응 프로젝트 (TCAP)</strong><br>
+        해안 보호 구조물과 맹그로브 복원, 주민 역량 강화를 통해 해수면 상승에 대응하고 있습니다.<br>
+        <a href="https://en.wikipedia.org/wiki/Tuvalu_Coastal_Adaptation_Project" target="_blank">관련 위키피디아</a>
+        </div>
+        """, unsafe_allow_html=True
+    )
+
+    st.markdown("---")
+
+    st.header("🛠️ 대응 및 해결 방안")
+
+    st.markdown(
+        """
+        <ul>
+            <li><strong>자연 기반 해결책:</strong> 맹그로브 숲, 염습지 복원 등을 통한 생태계 보호 및 해안선 안정화</li>
+            <li><strong>해안 방어 구조물 구축:</strong> 제방, 방조제, 해안 방파제 등 인프라 강화</li>
+            <li><strong>지역 이주 및 재정착:</strong> 위험 지역 주민의 안전한 이주 및 지원 정책 마련</li>
+            <li><strong>지속 가능한 도시 개발:</strong> 스펀지 도시 개념 도입으로 자연 수자원 관리 및 홍수 완화</li>
+        </ul>
         """,
         unsafe_allow_html=True
     )
 
-st.title("⚠️ 해수면 상승 피해 설명")
-
-# 파스텔 톤 색상 예시
-render_impact_section(
-    "📏 0~25cm 상승 (위험도: 낮음)",
-    "#f9e6f9",  # 파스텔 핑크
-    "#d18dc6",
-    [
-        "- 저지대 소규모 침수 발생 가능",
-        "- 해안 생태계 변화 시작",
-        "- 일부 농작물 염해 피해 🌱"
-    ]
-)
-
-render_impact_section(
-    "📏 25~50cm 상승 (위험도: 중간)",
-    "#d0f0fd",  # 파스텔 하늘색
-    "#5a9bd4",
-    [
-        "- 섬 국가 침수 가시화 (예: 투발루)",
-        "- 저지대 인구 이주 발생",
-        "- 주요 도시 하수도 역류 위험 💦"
-    ]
-)
-
-render_impact_section(
-    "📏 50~100cm 상승 (위험도: 높음)",
-    "#e6d7f8",  # 파스텔 연보라색
-    "#a085d9",
-    [
-        "- 도시 인프라 침수 (항만, 철도 등)",
-        "- 기후 난민 급증",
-        "- 식수 오염과 염수 침투 문제 💧"
-    ]
-)
-
-render_impact_section(
-    "📏 100cm 이상 상승 (위험도: 매우 높음)",
-    "#ffd7e8",  # 연핑크색
-    "#e085a6",
-    [
-        "- 해안선 대규모 침수",
-        "- 대규모 기후 이주자 발생",
-        "- 생태계 및 경제 시스템 붕괴 위험 🌍"
-    ]
-)
-
-st.markdown("---")
-
-st.header("🌍 실제 피해 사례")
-
-st.markdown(
-    """
-    <div style="background:#e6f2ff; border-left: 6px solid #7fb3ff; border-radius:8px; padding:15px; margin-bottom:20px;">
-    <strong>1. 필리핀 루손섬 어촌 공동체</strong><br>
-    루손섬 어촌 지역은 태풍 하이옌 이후 해수면 상승과 어획량 감소로 큰 피해를 입었습니다. 맹그로브 복원과 지속 가능한 생계 다각화로 대응 중입니다.<br>
-    <a href="https://time.com/7289533/philippines-fishing-communities-rising-water/" target="_blank">관련 기사 보기</a>
-    </div>
-    """, unsafe_allow_html=True
-)
-
-st.markdown(
-    """
-    <div style="background:#e6f2ff; border-left: 6px solid #7fb3ff; border-radius:8px; padding:15px; margin-bottom:20px;">
-    <strong>2. 멕시코 엘 보스케 마을</strong><br>
-    해수면 상승과 폭풍으로 인해 주민 다수가 이주했으며, 정부 지원 지연 속 자력 재건을 시도하고 있습니다.<br>
-    <a href="https://apnews.com/article/ec3aabaa42157f172e1b27f489104641" target="_blank">관련 기사 보기</a>
-    </div>
-    """, unsafe_allow_html=True
-)
-
-st.markdown(
-    """
-    <div style="background:#e6f2ff; border-left: 6px solid #7fb3ff; border-radius:8px; padding:15px; margin-bottom:20px;">
-    <strong>3. 투발루 해안 적응 프로젝트 (TCAP)</strong><br>
-    해안 보호 구조물과 맹그로브 복원, 주민 역량 강화를 통해 해수면 상승에 대응하고 있습니다.<br>
-    <a href="https://en.wikipedia.org/wiki/Tuvalu_Coastal_Adaptation_Project" target="_blank">관련 위키피디아</a>
-    </div>
-    """, unsafe_allow_html=True
-)
-
-st.markdown("---")
-
-st.header("🛠️ 대응 및 해결 방안")
-
-st.markdown(
-    """
-    <ul>
-        <li><strong>자연 기반 해결책:</strong> 맹그로브 숲, 염습지 복원 등을 통한 생태계 보호 및 해안선 안정화</li>
-        <li><strong>해안 방어 구조물 구축:</strong> 제방, 방조제, 해안 방파제 등 인프라 강화</li>
-        <li><strong>지역 이주 및 재정착:</strong> 위험 지역 주민의 안전한 이주 및 지원 정책 마련</li>
-        <li><strong>지속 가능한 도시 개발:</strong> 스펀지 도시 개념 도입으로 자연 수자원 관리 및 홍수 완화</li>
-    </ul>
-    """,
-    unsafe_allow_html=True
-)
