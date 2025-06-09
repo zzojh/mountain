@@ -7,16 +7,9 @@ from streamlit_folium import st_folium
 def styled_title(text):
     st.markdown(f"<h2 style='color:#1e3a8a; text-decoration: underline; margin-bottom:5px;'>{text}</h2>", unsafe_allow_html=True)
 
-def colored_text(text, color, size="16px", bold=False, underline=False):
+def white_text(text, size="16px", bold=False):
     weight = "bold" if bold else "normal"
-    under = "underline" if underline else "none"
-    st.markdown(
-        f"<p style='color:{color}; font-size:{size}; font-weight:{weight}; text-decoration:{under}; margin-bottom:5px;'>{text}</p>",
-        unsafe_allow_html=True
-    )
-
-def white_text(text, size="16px"):
-    st.markdown(f"<p style='color:#ffffff; font-size:{size}; margin-bottom:5px;'>{text}</p>", unsafe_allow_html=True)
+    st.markdown(f"<p style='color:#ffffff; font-size:{size}; font-weight:{weight}; margin-bottom:5px;'>{text}</p>", unsafe_allow_html=True)
 
 # 도시 데이터에 국가 컬럼 추가
 data = [
@@ -53,6 +46,13 @@ data = [
 ]
 
 df = pd.DataFrame(data)
+
+# 고정 피해 도시 일부 (서울, 마이애미, 방콕 예시)
+fixed_damage_cities = [
+    {"name": "서울", "lat": 37.5665, "lon": 126.9780, "desc": "한국 서울시 해수면 상승 위험 지역"},
+    {"name": "마이애미", "lat": 25.7617, "lon": -80.1918, "desc": "미국 마이애미, 해수면 상승과 폭풍해일 취약"},
+    {"name": "방콕", "lat": 13.7563, "lon": 100.5018, "desc": "태국 방콕, 침수 위험 증가 중"}
+]
 
 # 페이지 선택용 세션 상태 초기화
 if 'page' not in st.session_state:
@@ -155,19 +155,51 @@ elif st.session_state.page == "damage":
     st.markdown("---")
 
     styled_title("🌍 실제 피해 사례")
-    colored_text("1. 필리핀 루손섬 어촌 공동체: 태풍 하이옌 이후 해수면 상승과 어획량 감소로 피해 발생. 맹그로브 복원과 생계 다각화로 대응 중.", "#1e3a8a", size="15px", bold=True)
+    white_text("1. 필리핀 루손섬 어촌 공동체: 태풍 하이옌 이후 해수면 상승과 어획량 감소로 피해 발생. 맹그로브 복원과 생계 다각화로 대응 중.")
     st.markdown("[관련 기사 보기](https://time.com/7289533/philippines-fishing-communities-rising-water/)", unsafe_allow_html=True)
 
-    colored_text("2. 멕시코 엘 보스케 마을: 해수면 상승과 폭풍으로 주민 다수가 이주, 정부 지원 지연 속 자력 재건 시도.", "#1e3a8a", size="15px", bold=True)
+    white_text("2. 멕시코 엘 보스케 마을: 해수면 상승과 폭풍으로 주민 다수가 이주, 정부 지원 지연 속 자력 재건 시도.")
     st.markdown("[관련 기사 보기](https://apnews.com/article/ec3aabaa42157f172e1b27f489104641)", unsafe_allow_html=True)
 
-    colored_text("3. 투발루 해안 적응 프로젝트 (TCAP): 해안 보호 구조물, 맹그로브 복원, 주민 역량 강화로 해수면 상승 대응.", "#1e3a8a", size="15px", bold=True)
+    white_text("3. 투발루 해안 적응 프로젝트 (TCAP): 해안 보호 구조물, 맹그로브 복원, 주민 역량 강화로 해수면 상승 대응.")
     st.markdown("[관련 위키피디아](https://en.wikipedia.org/wiki/Tuvalu_Coastal_Adaptation_Project)", unsafe_allow_html=True)
 
     st.markdown("---")
 
     styled_title("🛠️ 대응 및 해결 방안")
-    colored_text("• 자연 기반 해결책: 맹그로브 숲, 염습지 복원 등 생태계 보호 및 해안선 안정화", "#1e3a8a", size="15px")
-    colored_text("• 해안 방어 구조물 구축: 제방, 방조제, 해안 방파제 등 인프라 강화", "#1e3a8a", size="15px")
-    colored_text("• 지역 이주 및 재정착: 위험 지역 주민의 안전한 이주 및 지원 정책 마련", "#1e3a8a", size="15px")
-    colored_text("• 지속 가능한 도시 개발: 스펀지 도시 개념 도입으로 자연 수자원 관리 및 홍수 완화", "#1e3a8a", size="15px")
+    white_text("• 자연 기반 해결책: 맹그로브 숲, 염습지 복원 등 생태계 보호 및 해안선 안정화")
+    white_text("• 해안 방어 구조물 구축: 제방, 방조제, 해안 방파제 등 인프라 강화")
+    white_text("• 지역 이주 및 재정착: 위험 지역 주민의 안전한 이주 및 지원 정책 마련")
+    white_text("• 지속 가능한 도시 개발: 스펀지 도시 개념 도입으로 자연 수자원 관리 및 홍수 완화")
+
+    # 피해 도시 고정 + 사용자 위치 추가 표시 지도
+    styled_title("📍 피해 도시 및 사용자 지정 위치 확인")
+
+    # 지도 중심은 한국 서울로 기본 설정
+    map_center = [37.5665, 126.9780]
+    m = folium.Map(location=map_center, zoom_start=3)
+
+    # 고정 피해 도시 마커 추가
+    for city in fixed_damage_cities:
+        folium.Marker(
+            location=[city["lat"], city["lon"]],
+            popup=f"{city['name']} - {city['desc']}",
+            icon=folium.Icon(color="red", icon="exclamation-triangle", prefix='fa')
+        ).add_to(m)
+
+    st.write("아래에 위도와 경도를 입력하면 지도에 마커를 추가할 수 있습니다.")
+
+    # 사용자 입력 위도, 경도
+    user_lat = st.number_input("위도 (Latitude)", min_value=-90.0, max_value=90.0, value=37.5665, format="%.6f")
+    user_lon = st.number_input("경도 (Longitude)", min_value=-180.0, max_value=180.0, value=126.9780, format="%.6f")
+    user_desc = st.text_input("위치 설명 (예: '내 관심 지역')", "")
+
+    if st.button("➕ 위치 추가하기"):
+        folium.Marker(
+            location=[user_lat, user_lon],
+            popup=user_desc if user_desc else "사용자 지정 위치",
+            icon=folium.Icon(color="blue", icon="map-marker", prefix='fa')
+        ).add_to(m)
+        st.success("지도에 위치가 추가되었습니다!")
+
+    st_folium(m, width=800, height=500)
