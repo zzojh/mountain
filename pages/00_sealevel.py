@@ -59,11 +59,11 @@ if st.session_state.page == "simulator":
     # 위험도 계산 함수
     def get_risk(rise, threshold):
         if rise >= threshold:
-            return "높음"
+            return "높음🔴"
         elif rise >= threshold * 0.5:
-            return "중간"
+            return "중간🟠"
         else:
-            return "낮음"
+            return "낮음🔵"
 
     df["위험도"] = df["flood_threshold"].apply(lambda x: get_risk(rise_cm, x))
 
