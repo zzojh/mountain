@@ -9,7 +9,7 @@ def styled_title(text):
 
 def white_text(text, size="16px", bold=False):
     weight = "bold" if bold else "normal"
-    st.markdown(f"<p style='color:#ffffff; font-size:{size}; font-weight:{weight}; margin-bottom:5px;'>{text}</p>", unsafe_allow_html=True)
+    st.markdown(f"<p style='color:#000000; font-size:{size}; font-weight:{weight}; margin-bottom:5px;'>{text}</p>", unsafe_allow_html=True)
 
 # 기본 도시 데이터 (나라, 도시, 위도, 경도, 침수 임계값(cm))
 data = [
@@ -139,42 +139,42 @@ elif st.session_state.page == "damage":
 
     styled_title("0 ~ 25cm 상승 (위험도: 낮음)")
     black_text("● 저지대 소규모 침수 발생 가능")
-    white_text("● 해안 생태계 변화 시작")
-    white_text("● 일부 농작물 염해 피해 🌱")
+    black_text("● 해안 생태계 변화 시작")
+    black_text("● 일부 농작물 염해 피해 🌱")
 
     styled_title("25 ~ 50cm 상승 (위험도: 중간)")
-    white_text("● 섬 국가 침수 가시화 (예: 투발루)")
-    white_text("● 저지대 인구 이주 발생")
-    white_text("● 주요 도시 하수도 역류 위험 💦")
+    black_text("● 섬 국가 침수 가시화 (예: 투발루)")
+    black_text("● 저지대 인구 이주 발생")
+    black_text("● 주요 도시 하수도 역류 위험 💦")
 
     styled_title("50 ~ 100cm 상승 (위험도: 높음)")
-    white_text("● 도시 인프라 침수 (항만, 철도 등)")
-    white_text("● 기후 난민 급증")
-    white_text("● 식수 오염과 염수 침투 문제 💧")
+    black_text("● 도시 인프라 침수 (항만, 철도 등)")
+    black_text("● 기후 난민 급증")
+    black_text("● 식수 오염과 염수 침투 문제 💧")
 
     styled_title("100cm 이상 상승 (위험도: 매우 높음)")
-    white_text("● 해안선 대규모 침수")
-    white_text("● 대규모 기후 이주자 발생")
-    white_text("● 생태계 및 경제 시스템 붕괴 위험 🌍")
+    black_text("● 해안선 대규모 침수")
+    black_text("● 대규모 기후 이주자 발생")
+    black_text("● 생태계 및 경제 시스템 붕괴 위험 🌍")
 
     st.markdown("---")
 
     styled_title("🌍 실제 피해 사례")
-    white_text("1. 필리핀 루손섬 어촌 공동체: 태풍 하이옌 이후 해수면 상승과 어획량 감소로 피해 발생. 맹그로브 복원과 생계 다각화로 대응 중.")
+    black_text("1. 필리핀 루손섬 어촌 공동체: 태풍 하이옌 이후 해수면 상승과 어획량 감소로 피해 발생. 맹그로브 복원과 생계 다각화로 대응 중.")
     st.markdown("[관련 기사 보기](https://time.com/7289533/philippines-fishing-communities-rising-water/)", unsafe_allow_html=True)
 
-    white_text("2. 멕시코 엘 보스케 마을: 해수면 상승과 폭풍으로 주민 다수가 이주, 정부 지원 지연 속 자력 재건 시도.")
+    black_text("2. 멕시코 엘 보스케 마을: 해수면 상승과 폭풍으로 주민 다수가 이주, 정부 지원 지연 속 자력 재건 시도.")
     st.markdown("[관련 기사 보기](https://apnews.com/article/ec3aabaa42157f172e1b27f489104641)", unsafe_allow_html=True)
 
-    white_text("3. 투발루 해안 적응 프로젝트 (TCAP): 해안 보호 구조물, 맹그로브 복원, 주민 역량 강화로 해수면 상승 대응.")
+    black_text("3. 투발루 해안 적응 프로젝트 (TCAP): 해안 보호 구조물, 맹그로브 복원, 주민 역량 강화로 해수면 상승 대응.")
     st.markdown("[관련 위키피디아](https://en.wikipedia.org/wiki/Tuvalu_Coastal_Adaptation_Project)", unsafe_allow_html=True)
 
     st.markdown("---")
 
     styled_title("🛠️ 대응 및 해결 방안")
-    white_text("• 자연 기반 해결책: 맹그로브 숲, 염습지 복원 등 생태계 보호 및 해안선 안정화")
-    white_text("• 해안 방어 구조물 구축: 제방, 방조제, 해안 방파제 등 인프라 강화")
-    white_text("• 지역 이주 및 재정착: 위험 지역 주민의 안전한 이주 및 지원 정책 마련")
-    white_text("• 지속 가능한 도시 개발: 스펀지 도시 개념 도입으로 자연 수자원 관리 및 홍수 완화")
+    black_text("• 자연 기반 해결책: 맹그로브 숲, 염습지 복원 등 생태계 보호 및 해안선 안정화")
+    black_text("• 해안 방어 구조물 구축: 제방, 방조제, 해안 방파제 등 인프라 강화")
+    black_text("• 지역 이주 및 재정착: 위험 지역 주민의 안전한 이주 및 지원 정책 마련")
+    black_text("• 지속 가능한 도시 개발: 스펀지 도시 개념 도입으로 자연 수자원 관리 및 홍수 완화")
 
 
