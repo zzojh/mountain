@@ -138,7 +138,7 @@ elif st.session_state.page == "damage":
     st.title("⚠️ 해수면 상승 피해 설명")
 
     styled_title("0 ~ 25cm 상승 (위험도: 낮음)")
-    white_text("● 저지대 소규모 침수 발생 가능")
+    black_text("● 저지대 소규모 침수 발생 가능")
     white_text("● 해안 생태계 변화 시작")
     white_text("● 일부 농작물 염해 피해 🌱")
 
